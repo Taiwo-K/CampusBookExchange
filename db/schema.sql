@@ -1,5 +1,7 @@
 -- ============================================================
 --  CampusBookExchange — database schema
+--  PostgreSQL 13+
+--
 --  Run once against an empty database:
 --      psql "$DATABASE_URL" -f db/schema.sql
 --
@@ -50,7 +52,7 @@ CREATE TABLE users (
 
 -- ------------------------------------------------------------
 -- verification_tokens                                    FR-2
---   Token is stored hashed, so reading the table won't let
+--   Token is stored hashed, so reading the table does not let
 --   anyone verify another student's account.
 -- ------------------------------------------------------------
 CREATE TABLE verification_tokens (
@@ -279,7 +281,7 @@ CREATE TABLE meetup_locations (
 
 -- ============================================================
 --  SEED DATA
---  demonstrating search and the budget planner.
+--  Enough to demonstrate search and the budget planner.
 -- ============================================================
 
 INSERT INTO meetup_locations (name, building) VALUES
@@ -287,8 +289,7 @@ INSERT INTO meetup_locations (name, building) VALUES
   ('Willis Library entrance',         'Willis Library'),
   ('Discovery Park atrium',           'Discovery Park'),
   ('Business Leadership Building lobby', 'BLB'),
-  ('Pohl Recreation Center entrance', 'Pohl Rec Center'),
-  ('Chemistry Building entrance', 'Chemistry Building');
+  ('Pohl Recreation Center entrance', 'Pohl Rec Center');
 
 INSERT INTO courses (course_number, title, department) VALUES
   ('ACCT 2010', 'Principles of Accounting I',        'Accounting'),
