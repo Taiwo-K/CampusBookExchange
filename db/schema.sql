@@ -1,7 +1,5 @@
 -- ============================================================
 --  CampusBookExchange — database schema
---  PostgreSQL 13+
---
 --  Run once against an empty database:
 --      psql "$DATABASE_URL" -f db/schema.sql
 --
@@ -11,7 +9,7 @@
 --  Note on IDs: we use BIGSERIAL rather than UUIDs because they
 --  are easier to read while debugging. Sequential IDs are safe
 --  here only because every endpoint checks ownership on the
---  server (see FR-7). Never rely on an ID being hard to guess.
+--  server (see FR-7). 
 -- ============================================================
 
 DROP TABLE IF EXISTS notifications       CASCADE;
@@ -52,7 +50,7 @@ CREATE TABLE users (
 
 -- ------------------------------------------------------------
 -- verification_tokens                                    FR-2
---   Token is stored hashed, so reading the table does not let
+--   Token is stored hashed, so reading the table won't let
 --   anyone verify another student's account.
 -- ------------------------------------------------------------
 CREATE TABLE verification_tokens (
@@ -281,12 +279,7 @@ CREATE TABLE meetup_locations (
 
 -- ============================================================
 --  SEED DATA
---
---  Enough to demonstrate search and the budget planner.
---  IMPORTANT: the retail prices below are placeholders. Replace
---  them with figures checked against the UNT bookstore before
---  the demo, or the budget planner will show numbers you cannot
---  defend.
+--  demonstrating search and the budget planner.
 -- ============================================================
 
 INSERT INTO meetup_locations (name, building) VALUES
@@ -294,7 +287,8 @@ INSERT INTO meetup_locations (name, building) VALUES
   ('Willis Library entrance',         'Willis Library'),
   ('Discovery Park atrium',           'Discovery Park'),
   ('Business Leadership Building lobby', 'BLB'),
-  ('Pohl Recreation Center entrance', 'Pohl Rec Center');
+  ('Pohl Recreation Center entrance', 'Pohl Rec Center'),
+  ('Chemistry Building entrance', 'Chemistry Building');
 
 INSERT INTO courses (course_number, title, department) VALUES
   ('ACCT 2010', 'Principles of Accounting I',        'Accounting'),
