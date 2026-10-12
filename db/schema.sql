@@ -1,15 +1,9 @@
 -- ============================================================
 --  CampusBookExchange — database schema
---  PostgreSQL 13+
---
---  Run once against an empty database:
---      psql "$DATABASE_URL" -f db/schema.sql
---
 --  Traces to Section 6 of the design document. Every table here
 --  appears in at least one sequence diagram.
---
---  Note on IDs: we use BIGSERIAL rather than UUIDs because they
---  are easier to read while debugging. Sequential IDs are safe
+--  Note on IDs: we use BIGSERIAL  because they
+--  are easier to read while debugging instead of UUIDS. Sequential IDs are safe
 --  here only because every endpoint checks ownership on the
 --  server (see FR-7). 
 -- ============================================================
@@ -52,7 +46,7 @@ CREATE TABLE users (
 
 -- ------------------------------------------------------------
 -- verification_tokens                                    FR-2
---   Token is stored hashed, so reading the table does not let
+--   Token is stored hashed, so it does not let
 --   anyone verify another student's account.
 -- ------------------------------------------------------------
 CREATE TABLE verification_tokens (
@@ -118,7 +112,7 @@ CREATE INDEX idx_materials_isbn ON materials (isbn);
 
 -- ------------------------------------------------------------
 -- course_materials                                       FR-15
---   A course with no rows here is the "unknown" case: it is
+--   A course with no rows here is the "unknown" case which is
 --   excluded from the totals rather than counted as zero.
 -- ------------------------------------------------------------
 CREATE TABLE course_materials (
@@ -186,7 +180,7 @@ CREATE INDEX idx_listings_created  ON listings (created_at DESC);
 
 -- ------------------------------------------------------------
 -- listing_photos                                          FR-5
---   The five-image limit is enforced in the API, not here.
+--   The five-image limit is enforced in API
 -- ------------------------------------------------------------
 CREATE TABLE listing_photos (
     id             BIGSERIAL    PRIMARY KEY,
@@ -238,7 +232,7 @@ CREATE INDEX idx_messages_conversation ON messages (conversation_id, sent_at);
 
 -- ------------------------------------------------------------
 -- watchlists                                             FR-12
---   The unique constraint is what prevents duplicate alerts.
+--   The unique constraint prevents duplicate alerts.
 -- ------------------------------------------------------------
 CREATE TABLE watchlists (
     id           BIGSERIAL   PRIMARY KEY,
@@ -280,8 +274,7 @@ CREATE TABLE meetup_locations (
 
 
 -- ============================================================
---  SEED DATA
---  Enough to demonstrate search and the budget planner.
+--  SEED DATA to demonstrate search and the budget planner.
 -- ============================================================
 
 INSERT INTO meetup_locations (name, building) VALUES
@@ -321,8 +314,7 @@ INSERT INTO materials (title, author, edition, isbn, retail_price, transferable)
   ('Psychology',                         'Myers, DeWall',           '13th', '9781319132101', 160.00, TRUE),
   ('Pearson MyLab access code (PSYC 1630)', NULL,                   NULL,   NULL,             95.00, FALSE);
 
--- Map materials to courses by looking them up, so this stays
--- correct regardless of the IDs the serial sequence assigned.
+-- Map materials to courses by looking them up.
 INSERT INTO course_materials (course_id, material_id, required)
 SELECT c.id, m.id, TRUE
 FROM   (VALUES
@@ -356,7 +348,4 @@ FROM   courses c, materials m
 WHERE  c.course_number = 'PSYC 1630'
   AND  m.title = 'Pearson MyLab access code (PSYC 1630)';
 
--- CHEM 1410 is deliberately left with only one material and
--- ENGL 1310 with one, so you can test the "partial data" path.
--- No materials are mapped to ACCT 2020's lab, giving you a
--- course that exercises the "unknown" branch in FR-15.
+-- No materials are mapped to ACCT 2020's lab, to exercises the "unknown" branch in FR-15.
