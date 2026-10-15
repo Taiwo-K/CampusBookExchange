@@ -9,3 +9,26 @@ def get_watchlist():
         "message": "Watchlist feature is working",
         "items": []
     })
+
+@watchlist_bp.route("/watchlist", methods=["POST"])
+def add_watchlist():
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return jsonify({
+            "error": "A JSON object is required"
+        }), 400
+
+    material_id = data.get("material_id")
+
+    if type(material_id) is not int or material_id <= 0:
+        return jsonify({
+            "error": "A valid material_id is required"
+        }), 400
+
+    return jsonify({
+        "message": "Watchlist request received",
+        "material_id": material_id
+    }), 200
+
+
