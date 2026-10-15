@@ -31,4 +31,16 @@ def add_watchlist():
         "material_id": material_id
     }), 200
 
+@watchlist_bp.route("/watchlist/<int:material_id>", methods=["DELETE"])
+def remove_watchlist(material_id):
+    if material_id <= 0:
+        return jsonify({
+            "error": "A valid material_id is required"
+        }), 400
+
+    return jsonify({
+        "message": "Watchlist removal request received",
+        "material_id": material_id
+    }), 200
+
 
