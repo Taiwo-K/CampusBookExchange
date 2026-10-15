@@ -7,10 +7,10 @@
 # add a package, add it here too and say so in the PR.
 
 Flask==3.0.3            # web framework
-psycopg[binary]==3.2.3  # PostgreSQL driver (v3, not psycopg2)
+psycopg[binary]==3.2.13  # PostgreSQL driver (v3, not psycopg2)
 psycopg_pool==3.2.3     # connection pooling
 python-dotenv==1.0.1    # loads .env into os.environ
-bcrypt==4.2.0           # password hashing (FR-1)
+bcrypt==5.0.0           # password hashing (FR-1)
 requests==2.32.3        # ISBN lookup against Open Library (FR-5)
 resend==2.4.0           # verification and alert email (FR-2, FR-13)
 
