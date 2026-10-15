@@ -1,0 +1,125 @@
+/* ============================================================
+   CampusBookExchange — shared stylesheet
+
+   Every colour here comes from the UI style guide, with the
+   measured contrast ratio in the comment. Do not introduce a
+   colour that is not in this block: the accessibility marks
+   depend on these exact values.
+   ============================================================ */
+
+:root {
+  --text-primary:   #1A1A18;   /* 17.0:1 on white */
+  --text-secondary: #5F5F5C;   /*  6.4:1 */
+  --text-muted:     #767672;   /*  4.6:1 */
+  --brand-green:    #00853E;   /*  4.7:1 — fills and buttons */
+  --green-text:     #005A33;   /*  8.4:1 — text and links */
+  --error:          #B3261E;   /*  6.5:1 */
+  --error-bg:       #F9D9D6;
+  --border:         #C4C4C0;
+  --surface:        #F2F2F0;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: Inter, Roboto, -apple-system, sans-serif;
+  color: var(--text-primary);
+  background: #FFFFFF;
+  margin: 0;
+  padding: 24px 16px 48px;
+}
+
+/* 361px = the 393px frame minus the 16px gutters, so the browser
+   matches the Figma screens exactly. */
+.page { max-width: 361px; margin: 0 auto; }
+
+h1 { font-size: 22px; font-weight: 500; margin: 0 0 4px; }
+
+.subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0 0 24px;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+input {
+  width: 100%;
+  height: 48px;
+  padding: 0 12px;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: #FFFFFF;            /* white, not grey — this is what
+                                     cost us the accessibility marks */
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 6px;
+}
+
+input::placeholder { color: var(--text-muted); }
+
+input:focus {
+  outline: none;
+  border: 2px solid var(--brand-green);
+}
+
+input.invalid { border-color: var(--error); }
+
+/* Helper text shown BEFORE the user types — error prevention */
+.helper {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0 0 16px;
+}
+.helper.ok    { color: var(--green-text); }
+.helper.error { color: var(--error); }
+
+/* Icon alongside the colour, so state never relies on colour alone */
+.helper .mark { font-weight: 500; margin-right: 4px; }
+
+button {
+  width: 100%;
+  height: 48px;
+  margin-top: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  font-family: inherit;
+  color: #FFFFFF;
+  background: var(--brand-green);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button:disabled {
+  background: var(--border);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+}
+
+.footer {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 18px;
+}
+
+.footer a { color: var(--green-text); font-weight: 500; }
+
+/* Server-side messages (flash). The browser-side helper text above
+   handles the common cases; these are for what only the server knows. */
+.flash {
+  font-size: 13px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+.flash.error { background: var(--error-bg); color: var(--error); }
+.flash.ok    { background: var(--surface);  color: var(--green-text); }
+.flash.info  { background: var(--surface);  color: var(--text-secondary); }
