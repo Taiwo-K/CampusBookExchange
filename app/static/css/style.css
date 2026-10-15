@@ -2,9 +2,7 @@
    CampusBookExchange — shared stylesheet
 
    Every colour here comes from the UI style guide, with the
-   measured contrast ratio in the comment. Do not introduce a
-   colour that is not in this block: the accessibility marks
-   depend on these exact values.
+   measured contrast ratio in the comment.
    ============================================================ */
 
 :root {
@@ -55,8 +53,8 @@ input {
   font-size: 15px;
   font-family: inherit;
   color: var(--text-primary);
-  background: #FFFFFF;            /* white, not grey — this is what
-                                     cost us the accessibility marks */
+  background: #FFFFFF;            
+   
   border: 1px solid var(--border);
   border-radius: 8px;
   margin-bottom: 6px;
