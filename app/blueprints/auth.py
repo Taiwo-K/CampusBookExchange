@@ -13,6 +13,7 @@ import bcrypt
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from app import db
+from app.password_validator import validate_password
 
 bp = Blueprint("auth", __name__)
 
@@ -49,8 +50,7 @@ def register_submit():
         errors.append("Last name is required.")
     if not UNT_EMAIL.match(email):
         errors.append("Use your unt.edu email address.")
-    if len(password) < 8:
-        errors.append("Password must be at least 8 characters.")
+    errors.extend(validate_password(password, email, first_name, last_name))
 
     if errors:
         for e in errors:
