@@ -2,9 +2,7 @@
 Accounts — FR-1 registration, FR-2 verification, FR-3 login.
 
 SKELETON ONLY. The GET routes render the pages so the app runs end to
-end from day one. The POST handlers are deliberately left as stubs for
-whoever owns these tasks to fill in — the structure is here, the feature
-is not.
+end from day one. 
 """
 
 import re
