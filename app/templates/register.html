@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Create your account — CampusBookExchange{% endblock %}
+
+{% block content %}
+  <h1>Create your account</h1>
+  <p class="subtitle">You'll need a unt.edu email address</p>
+
+  <form action="{{ url_for('auth.register_submit') }}" method="POST" id="registerForm">
+
+    <label for="first_name">First name</label>
+    <input type="text" id="first_name" name="first_name"
+           value="{{ form.first_name if form else '' }}"
+           placeholder="Zainab" required>
+    <p class="helper"></p>
+
+    <label for="last_name">Last name</label>
+    <input type="text" id="last_name" name="last_name"
+           value="{{ form.last_name if form else '' }}"
+           placeholder="Olajide" required>
+    <p class="helper"></p>
+
+    <label for="email">UNT email</label>
+    <input type="email" id="email" name="email"
+           value="{{ form.email if form else '' }}"
+           placeholder="name@my.unt.edu" required>
+    <p class="helper" id="emailHelp">Must end in unt.edu</p>
+
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password"
+           minlength="8" required>
+    <p class="helper" id="passwordHelp">At least 8 characters</p>
+
+    <button type="submit" id="submitBtn" disabled>Create account</button>
+  </form>
+
+  <p class="footer">
+    Already have an account? <a href="{{ url_for('auth.login_form') }}">Sign in</a>
+  </p>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Keeps the submit button disabled until every field is valid.
+  // This is the "error prevention" heuristic made visible: the user
+  // cannot submit a form that will fail.
+  // NOTE: these checks are for the user's convenience only. The
+  // server must repeat all of them — a browser check can be bypassed.
+
+  const form         = document.getElementById('registerForm');
+  const firstName    = document.getElementById('first_name');
+  const lastName     = document.getElementById('last_name');
+  const email        = document.getElementById('email');
+  const password     = document.getElementById('password');
+  const emailHelp    = document.getElementById('emailHelp');
+  const passwordHelp = document.getElementById('passwordHelp');
+  const submitBtn    = document.getElementById('submitBtn');
+
+  function emailIsValid(value) {
+    return /^[^@\s]+@([a-z0-9-]+\.)*unt\.edu$/i.test(value.trim());
+  }
+
+  function checkEmail() {
+    const value = email.value.trim();
+
+    if (value === '') {
+      emailHelp.textContent = 'Must end in unt.edu';
+      emailHelp.className   = 'helper';
+      email.classList.remove('invalid');
+      return false;
+    }
+    if (emailIsValid(value)) {
+      emailHelp.innerHTML = '<span class="mark">&#10003;</span>Valid UNT address';
+      emailHelp.className = 'helper ok';
+      email.classList.remove('invalid');
+      return true;
+    }
+    emailHelp.innerHTML = '<span class="mark">&#9888;</span>Use your unt.edu address, not a personal one';
+    emailHelp.className = 'helper error';
+    email.classList.add('invalid');
+    return false;
+  }
+
+  function checkPassword() {
+    const value = password.value;
+
+    if (value === '') {
+      passwordHelp.textContent = 'At least 8 characters';
+      passwordHelp.className   = 'helper';
+      password.classList.remove('invalid');
+      return false;
+    }
+    if (value.length >= 8) {
+      passwordHelp.innerHTML = '<span class="mark">&#10003;</span>Meets requirements';
+      passwordHelp.className = 'helper ok';
+      password.classList.remove('invalid');
+      return true;
+    }
+    passwordHelp.innerHTML = '<span class="mark">&#9888;</span>Needs at least 8 characters';
+    passwordHelp.className = 'helper error';
+    password.classList.add('invalid');
+    return false;
+  }
+
+  function updateSubmitState() {
+    const ready =
+      firstName.value.trim() !== '' &&
+      lastName.value.trim()  !== '' &&
+      checkEmail() &&
+      checkPassword();
+
+    submitBtn.disabled = !ready;
+  }
+
+  form.addEventListener('input', updateSubmitState);
+  updateSubmitState();
+</script>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}Search — CampusBookExchange{% endblock %}
+
+{% block head %}
+<style>
+  .searchbar { display: flex; gap: 8px; margin-bottom: 20px; }
+  .searchbar input { margin-bottom: 0; }
+  .searchbar button { width: auto; margin-top: 0; padding: 0 18px; }
+
+  .result {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    color: inherit;
+  }
+  .thumb {
+    width: 56px;
+    height: 72px;
+    flex: none;
+    border-radius: 4px;
+    background: var(--surface);
+    object-fit: cover;
+  }
+  .result-body { flex: 1; min-width: 0; }
+  .result-title {
+    font-size: 15px;
+    font-weight: 500;
+    margin: 0 0 4px;
+  }
+  .result-meta {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0 0 6px;
+  }
+  .price {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--green-text);
+    margin: 0;
+  }
+  /* Free and trade get a label, never a blank space where a price
+     would be. A missing price is a different thing from $0.00. */
+  .tag {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--surface);
+    color: var(--green-text);
+  }
+  .empty {
+    text-align: center;
+    padding: 48px 0;
+  }
+  .empty-title {
+    font-size: 15px;
+    color: var(--text-primary);
+    margin: 0 0 6px;
+  }
+  .empty-hint {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+  .count {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0 0 4px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+  <h1>Find a book</h1>
+  <p class="subtitle">Search by title, ISBN or course number</p>
+
+  <form class="searchbar" action="{{ url_for('search.search') }}" method="GET">
+    <input type="search" name="q" value="{{ query }}"
+           placeholder="Fundamentals of Nursing" aria-label="Search">
+    <button type="submit">Search</button>
+  </form>
+
+  {# Three states, not two. "Haven't searched yet" and "searched and
+     found nothing" are different situations and need different words. #}
+
+  {% if results is none %}
+    <div class="empty">
+      <p class="empty-title">Search for a book</p>
+      <p class="empty-hint">
+        Try a title, an ISBN, or a course number like CSCE 3444.
+      </p>
+    </div>
+
+  {% elif results|length == 0 %}
+    <div class="empty">
+      <p class="empty-title">No listings for “{{ query }}”</p>
+      <p class="empty-hint">
+        Nobody's selling this right now. Add it to your watchlist and
+        we'll email you when someone does.
+      </p>
+    </div>
+
+  {% else %}
+    <p class="count">
+      {{ results|length }} listing{{ '' if results|length == 1 else 's' }}
+    </p>
+
+    {% for r in results %}
+      {# Plain path for now. Swap to url_for('listings.detail', ...)
+         once the listings blueprint exists — url_for would raise a
+         BuildError today because that route isn't registered yet. #}
+      <a class="result" href="/listings/{{ r.id }}">
+        {% if r.photo_url %}
+          <img class="thumb" src="{{ r.photo_url }}" alt="">
+        {% else %}
+          <div class="thumb"></div>
+        {% endif %}
+
+        <div class="result-body">
+          <p class="result-title">{{ r.title }}</p>
+          <p class="result-meta">
+            {% if r.course_number %}{{ r.course_number }} · {% endif %}
+            {{ r.condition|replace('_', ' ')|title }}
+          </p>
+
+          {% if r.listing_type == 'sale' %}
+            <p class="price">${{ '%.2f'|format(r.price) }}</p>
+          {% elif r.listing_type == 'giveaway' %}
+            <span class="tag">Free</span>
+          {% else %}
+            <span class="tag">Trade</span>
+          {% endif %}
+        </div>
+      </a>
+    {% endfor %}
+  {% endif %}
+{% endblock %}
