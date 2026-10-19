@@ -38,6 +38,9 @@ def init_pool() -> None:
         max_size=5,          # Neon's free tier is not generous — keep this low
         kwargs={"row_factory": dict_row},
         open=True,
+        check=ConnectionPool.check_connection,
+        max_idle=120.0,
+        reconnect_timeout=30.0,
     )
 
 
