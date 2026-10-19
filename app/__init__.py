@@ -1,5 +1,4 @@
 """
-Application factory.
 
 `create_app()` builds and returns the Flask app. Nothing runs at import
 time, which is what lets the tests build a fresh app per test run.
@@ -22,9 +21,6 @@ def create_app() -> Flask:
     app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
     # ---- Health check -----------------------------------------------
-    # The smallest thing that proves all three tiers are talking to each
-    # other. Sprint 0 is not finished until this returns ok on the
-    # deployed site, not just on localhost.
     @app.get("/api/health")
     def health():
         try:
@@ -40,9 +36,11 @@ def create_app() -> Flask:
     # ones here as they are built.
     from app.blueprints.auth import bp as auth_bp
     from app.blueprints.search import bp as search_bp
+    from app.blueprints.verify import bp as verify_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(search_bp)
+    app.register_blueprint(verify_bp)
 
     # Temporary: lets everyone build features before FR-3 login exists.
     # Only active when DEV_LOGIN_AS is set and debug mode is on.

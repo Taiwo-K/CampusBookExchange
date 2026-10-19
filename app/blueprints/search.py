@@ -40,9 +40,8 @@ SEARCH_SQL = """
 def search():
     term = request.args.get("q", "").strip()
 
-    # An empty search returns nothing, not everything. Without this
-    # guard the pattern becomes '%%' and matches every listing in the
-    # table, which is a slow way to show the user something useless.
+    # An empty search returns nothing, not everything.
+    
     if not term:
         return render_template("search.html", query="", results=None)
 

@@ -1,5 +1,5 @@
 """
-Who is logged in — shared plumbing, FR-3.
+Who is logged in — , FR-3.
 
 This is foundation, the same as db.py. Every feature that belongs to a
 particular student goes through here, so nobody invents their own way of
@@ -15,12 +15,6 @@ finding out who is signed in.
         )
         ...
 
-How it works: the browser holds a cookie containing a long random
-token — nothing else. The `sessions` table is the source of truth, and
-every request looks the token up there. That is why logout actually
-works: delete the row and the cookie is instantly worthless, even though
-the browser still has it. A cookie holding the user id directly could
-not be revoked that way.
 """
 
 import os
@@ -41,7 +35,7 @@ COOKIE_KEY = "session_token"
 
 
 def start_session(user_id: int) -> str:
-    """Create a session row and put its token in the cookie. Call on login."""
+    """Create a session row and put its token and Call on login."""
     token = secrets.token_urlsafe(32)
     ttl_hours = int(os.environ.get("SESSION_TTL_HOURS", "72"))
     expires_at = datetime.now(timezone.utc) + timedelta(hours=ttl_hours)
@@ -126,8 +120,7 @@ def require_verified(view):
     Signed in AND the unt.edu address confirmed (FR-2).
 
     This is the one to use on listings, messaging and the watchlist.
-    An unverified account must not be able to act in the marketplace —
-    that is the whole point of verification.
+    An unverified account must not be able to act in the marketplace.
     """
 
     @wraps(view)

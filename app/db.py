@@ -1,10 +1,7 @@
 """
 One shared database connection pool for the whole application.
 
-Every route that touches the database goes through here. Do not open
-your own connection anywhere else — the pool exists so we reuse a small
-number of connections instead of opening one per request, which the Neon
-free tier will not tolerate.
+Every route that touches the database goes through here.
 
 Usage:
 
@@ -67,9 +64,7 @@ def _get_pool() -> ConnectionPool:
 #      GOOD:  query_one("SELECT * FROM users WHERE email = %s", (email,))
 #      BAD:   query_one(f"SELECT * FROM users WHERE email = '{email}'")
 #
-#  The bad version is a SQL injection hole. The driver escapes the values
-#  for you when you use %s; it cannot help you if you have already glued
-#  the string together.
+#  The bad version is a SQL injection hole.
 # ---------------------------------------------------------------------
 
 

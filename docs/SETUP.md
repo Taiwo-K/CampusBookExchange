@@ -1,8 +1,7 @@
 # Getting started
 
 Everything you need to go from the repo to a running application.
-Work through this in order. Sections 1 to 4 are done once by one person;
-section 5 onward is done by everyone.
+Work through this in order.
 
 ---
 

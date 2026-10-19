@@ -2,12 +2,9 @@
 Email delivery — FR-2 verification, FR-13 watchlist alerts.
 
 Everything that sends mail goes through this file. The rest of the app
-never talks to Resend directly, so if we ever swap providers only this
-file changes.
-
+never talks to Resend directly, 
 In development set EMAIL_DEV_LOG_ONLY=true in .env and the links print
-to the terminal instead of being sent. You will register dozens of test
-accounts and you do not want them all in a real inbox.
+to the terminal instead of being sent. 
 """
 
 import hashlib
@@ -129,8 +126,7 @@ def resend_verification(email: str) -> None:
     """
     FR-2 alternate flow — the link expired or never arrived.
 
-    This always appears to succeed from the caller's side. Telling an
-    anonymous visitor "no such account" would let them test which UNT
+    Telling an anonymous visitor "no such account" would let them test which UNT
     addresses are registered here.
     """
     user = db.query_one(

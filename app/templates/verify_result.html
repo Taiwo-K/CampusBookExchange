@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}{{ heading }} — CampusBookExchange{% endblock %}
+
+{% block head %}
+<style>
+  .result { text-align: center; padding: 56px 0 24px; }
+  .mark {
+    width: 56px;
+    height: 56px;
+    line-height: 56px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    font-size: 26px;
+    font-weight: 500;
+  }
+  /* Icon and colour together, never colour on its own. */
+  .mark.ok    { background: var(--surface);  color: var(--green-text); }
+  .mark.error { background: var(--error-bg); color: var(--error); }
+
+  .result h1 { font-size: 22px; margin: 0 0 8px; }
+  .result p  {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0 auto;
+    max-width: 300px;
+    line-height: 1.5;
+  }
+  .actions { margin-top: 28px; }
+  .actions a {
+    display: block;
+    height: 48px;
+    line-height: 48px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+    margin-bottom: 10px;
+  }
+  .primary   { background: var(--brand-green); color: #FFFFFF; }
+  .secondary {
+    border: 1px solid var(--border);
+    color: var(--green-text);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+  <div class="result">
+    <div class="mark {{ 'ok' if ok else 'error' }}">
+      {{ '✓' if ok else '!' }}
+    </div>
+
+    <h1>{{ heading }}</h1>
+    <p>{{ detail }}</p>
+
+    <div class="actions">
+      {% if ok %}
+        <a class="primary" href="{{ url_for('search.search') }}">Find a book</a>
+      {% elif show_resend %}
+        <a class="primary" href="{{ url_for('verify.resend_form') }}">
+          Send a new link
+        </a>
+      {% endif %}
+      <a class="secondary" href="{{ url_for('auth.login_form') }}">Sign in</a>
+    </div>
+  </div>
+{% endblock %}
