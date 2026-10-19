@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <title>Create Listing</title>
+    </head>
+
+    <body>
+        <h1>Listing Details</h1>
+        <p>Please enter the textbook details</p>
+
+        <form action="/createlisting" method="POST">
+            
+            <div style="text-align: center;">
+                <label for="book_title">Title</label>
+                <input type="text" id="book_title" name="book_title" required>
+            </div>
+
+            <br>
+
+            <div style="text-align: center;">
+                <label for="author">Author</label>
+                <input type="text" id="author" name="author" required>
+            </div>
+
+            <br>
+
+            <div style="text-align: center;">
+                <label for="edition">edition</label>
+                <input type="text" id="edition" name="edition" required>
+            </div>
+
+            <br>
+
+            <div style="text-align: center;">
+                <label for="isbn">ISBN</label>
+                <input type="number" id="isbn" name="isbn" required>
+            </div>
+
+            <br>
+
+            <div style="text-align: center;">
+                <label for="retail_price">Retail Price</label>
+                <input type="number" id="retail_price" name="retail_price" required>
+            </div>
+
+            <br>
+
+            <div style="text-align: center;">
+                <label for="asking_price">Asking Price</label>
+                <input type="number" id="asking_price" name="asking_price" required>
+            </div>
+
+            <br>
+
+            <div style="text-align: center;">
+                <label for="textbook_image">Please Upload up to a picture of your textbook</label>
+                <input type="file" id="textbook_image" name="textbook_image" accept="image/*">
+            </div>
+
+            <br>
+
+            <div style="text-align: center;">
+            <img id="textbook_preview" src="" alt="TextBook Preview" style="max-width: 300px;">
+            </div>
+
+            <br>
+
+            <div style="text-align: center;">
+                <button style="background-color: green; color: white;" type="submit">Create Listing</button>
+            </div>
+
+        </form>
+
+        <script>
+            const textbook_image = document.getElementById('textbook_image')
+            const textbook_preview = document.getElementById('textbook_preview')
+
+            textbook_image.addEventListener('change', function(event){
+                const file = event.target.files[0];
+
+                if (file){
+                    const tempURL = URL.createObjectURL(file);
+
+                    textbook_preview.src = tempURL;
+                    textbook_preview.style.display = 'block';
+                }
+            });
+        </script>
+
+        
+
+    </body>
+
+</html>
