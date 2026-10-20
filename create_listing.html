@@ -8,8 +8,8 @@
         <form action="{{ url_for('listings.create_listing')}}" method="POST" enctype="multipart/form-data">
             
             <div style="text-align: center;">
-                <label for="book_title">Title</label>
-                <input type="text" id="book_title" name="book_title" value="{{form.book_title if form else ''}}" required>
+                <label for="title">Title</label>
+                <input type="text" id="title" name="title" value="{{form.title if form else ''}}" required>
             </div>
 
             <br>
@@ -43,11 +43,35 @@
             <br>
 
             <div style="text-align: center;">
-                <label for="asking_price">Asking Price</label>
-                <input type="number" id="asking_price" name="asking_price" value="{{form.asking_price if form else ''}}" required>
+                <label for="price">Asking Price</label>
+                <input type="number" id="price" name="price" value="{{form.price if form else ''}}" required>
             </div>
 
             <br>
+
+            <div style="text-align:center;">
+                <label for="condition">Condition</label>
+                <input type="text" id="condition" name="condition" value="{{form.condition if form else ''}}" required>
+            </div>
+
+            <br>
+
+            <div style="text-align: center;">
+                <label for="listing_type">Type of Listing</label>
+                <select id="listing_type" name="listing_type" required>
+                    <option value="">Select a type</option>
+                    <option value="sell" {{ 'selected' if form.listing_type == 'sell' else '' }}>Sell</option>
+                    <option value="trade" {{ 'selected' if form.listing_type == 'trade' else '' }}>Trade</option>
+                    <option value="giveaway" {{ 'selected' if form.listing_type == 'giveaway' else ''}}>Give Away</option>
+                </select>
+            </div>
+
+            <br>
+
+            <div style="text-align: center;">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="4" cols="50" required></textarea>
+            </div>
 
             <div style="text-align: center;">
                 <label for="textbook_image">Please Upload up to a picture of your textbook</label>
