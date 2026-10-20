@@ -43,13 +43,24 @@ def create_listing_submit():
             flash(e, "error")
         return render_template("create_listing.html", form=request.form), 400
 
-    listing = db.execute(
+  listing = db.execute(
         """
-        INSERT INTO listings (title, author, edition, isbn, retail_price)
-        VALUES(%s, %s, %s, %s. %s)
+        INSERT INTO listings (title, isbn, price, condition, listing_type, description)
+        VALUES(%s, %s, %s, %s, %s, %s)
         RETURNING id
         """,
-        (book_title,author, edition, isbn, retail_price),
+        (title, isbn, price, condition, listing_type, description),
     )
+
+    materials = db.execute(
+        """
+        INSERT INTO materials (title, author, edition, isbn, retail_price)
+        VALUES(%s, %s, %s, %s, %s)
+        RETURNING id
+        """,
+        (title, author, edition, isbn, retail_price),
+    )
+
+
 
     listing_id = listing["id"]
