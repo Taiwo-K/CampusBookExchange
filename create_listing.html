@@ -60,7 +60,7 @@
                 <label for="listing_type">Type of Listing</label>
                 <select id="listing_type" name="listing_type" required>
                     <option value="">Select a type</option>
-                    <option value="sell" {{ 'selected' if form.listing_type == 'sell' else '' }}>Sell</option>
+                    <option value="sell" {{ 'selected' if form.listing_type == 'sale' else '' }}>Sell</option>
                     <option value="trade" {{ 'selected' if form.listing_type == 'trade' else '' }}>Trade</option>
                     <option value="giveaway" {{ 'selected' if form.listing_type == 'giveaway' else ''}}>Give Away</option>
                 </select>
