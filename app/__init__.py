@@ -50,6 +50,11 @@ def create_app() -> Flask:
     from app import auth
     app.context_processor(lambda: {"current_user": auth.current_user()})
 
+    # FR-2 safety net — blocks unverified accounts from every blueprint
+    # not on the public allowlist, even one that forgets
+    # @require_verified.
+    auth.register_verification_guard(app)
+
     # from app.blueprints.watchlist import bp as watchlist_bp # FR-12, FR-13
     # from app.blueprints.budget    import bp as budget_bp    # FR-14..FR-17
 
