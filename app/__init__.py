@@ -20,6 +20,9 @@ def create_app() -> Flask:
     app.config["SESSION_COOKIE_HTTPONLY"] = True
     app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
+    # Caps the whole request body (5 photos x 5 MB + form fields) at the transport layer.
+    app.config["MAX_CONTENT_LENGTH"] = 30 * 1024 * 1024
+
     # ---- Health check -----------------------------------------------
     @app.get("/api/health")
     def health():
