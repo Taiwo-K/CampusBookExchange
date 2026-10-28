@@ -2,13 +2,12 @@
 {% block title %}Sign in — CampusBookExchange{% endblock %}
 
 {% block content %}
-  {% if user %}
+  {% if current_user %}
     <h1>You're signed in</h1>
-    <p class="subtitle">Signed in as {{ user.first_name }} {{ user.last_name }}</p>
-
-    <form action="{{ url_for('auth.logout') }}" method="POST">
-      <button type="submit">Sign out</button>
-    </form>
+    <p class="subtitle">
+      Signed in as {{ current_user.first_name }} {{ current_user.last_name }} —
+      use "Sign out" above to end your session.
+    </p>
   {% else %}
     <h1>Sign in</h1>
     <p class="subtitle">Use your unt.edu email address</p>

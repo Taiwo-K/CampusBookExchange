@@ -11,7 +11,7 @@ import bcrypt
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 
 from app import db
-from app.auth import current_user, end_session, start_session
+from app.auth import end_session, start_session
 from app.password_validator import validate_password
 from app.services.email import send_verification
 
@@ -107,7 +107,7 @@ def _safe_next(target: str | None) -> str | None:
 
 @bp.get("/login")
 def login_form():
-    return render_template("login.html", user=current_user(), next=request.args.get("next", ""))
+    return render_template("login.html", next=request.args.get("next", ""))
 
 
 @bp.post("/login")
