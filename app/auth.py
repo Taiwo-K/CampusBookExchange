@@ -136,6 +136,42 @@ def require_verified(view):
 
 
 # ---------------------------------------------------------------------
+#  App-wide safety net for FR-2 (FR-2 is a hard prerequisite — see
+#  docs/SETUP.md "Three things that will bite you").
+#
+#  `@require_verified` is still the right tool when a route needs a
+#  tailored redirect or message. This is the backstop for everything
+#  else: a blueprint that forgets the decorator should still fail
+#  closed instead of quietly letting an unverified account through.
+# ---------------------------------------------------------------------
+
+# Blueprints that must stay reachable by a signed-out or unverified
+# visitor: registering, verifying, logging in, and browsing listings
+# without an account. `static` is Flask's own blueprint for files
+# under app/static. Everything else — listings, messaging, watchlist,
+# the budget planner as they land — requires a verified session.
+PUBLIC_BLUEPRINTS = {"auth", "verify", "search", "static"}
+
+
+def register_verification_guard(app) -> None:
+    """Call once from create_app(), after every blueprint is registered."""
+
+    @app.before_request
+    def _block_unverified_accounts():
+        # request.blueprint is None for routes defined straight on the
+        # app (e.g. /api/health) rather than on a blueprint.
+        if request.blueprint is None or request.blueprint in PUBLIC_BLUEPRINTS:
+            return None
+
+        user = current_user()
+        if user is None:
+            return redirect(url_for("auth.login_form", next=request.path))
+        if not user["verified"]:
+            abort(403, "Confirm your UNT email address before using this feature.")
+        return None
+
+
+# ---------------------------------------------------------------------
 #  Temporary — delete once FR-3 login is merged.
 #
 #  Set DEV_LOGIN_AS=1 in your .env and every request is treated as
