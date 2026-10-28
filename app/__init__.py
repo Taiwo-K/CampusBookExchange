@@ -44,9 +44,15 @@ def create_app() -> Flask:
 
     # Temporary: lets everyone build features before FR-3 login exists.
     # Only active when DEV_LOGIN_AS is set and debug mode is on.
-    from app.auth import dev_login_if_enabled
+    from app.auth import dev_login_if_enabled, register_verification_guard
 
     dev_login_if_enabled(app)
+
+    # FR-2 safety net — blocks unverified accounts from every blueprint
+    # not on the public allowlist, even one that forgets
+    # @require_verified. Registered after dev_login_if_enabled so the
+    # dev fake-login has already set g.user by the time this runs.
+    register_verification_guard(app)
 
     # from app.blueprints.listings import bp as listings_bp   # FR-4..FR-7
     # from app.blueprints.messages  import bp as messages_bp  # FR-11
