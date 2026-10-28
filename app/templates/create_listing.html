@@ -5,7 +5,7 @@
     <h1>Listing Details</h1>
     <p>Please enter the textbook details</p>
 
-    <form action="{{ url_for('listings.create_listing')}}" method="POST" enctype="multipart/form-data">
+    <form action="{{ url_for('listings.create_listing_submit')}}" method="POST" enctype="multipart/form-data">
 
         <div style="text-align: center;">
             <label for="title">Title</label>
@@ -104,7 +104,9 @@
         <div style="text-align: center;">
             <label for="textbook_image">Upload up to 5 pictures of your textbook</label>
             <input type="file" id="textbook_image" name="textbook_image"
-                   accept="image/*" multiple>
+                   accept="image/jpeg,image/png,image/webp" multiple>
+            <p class="helper">jpg, png or webp, up to 5 MB each</p>
+            <p id="photoError" style="color: #B3261E; text-align: center;"></p>
         </div>
 
         <br>
@@ -126,17 +128,39 @@
 
 {% block scripts %}
 <script>
-    const textbook_image = document.getElementById('textbook_image')
+    const textbook_image   = document.getElementById('textbook_image')
     const textbook_preview = document.getElementById('textbook_preview')
+    const photoError       = document.getElementById('photoError')
+
+    const ALLOWED_PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+    const MAX_PHOTO_BYTES     = 5 * 1024 * 1024;
+    const MAX_PHOTOS          = 5;
 
     textbook_image.addEventListener('change', function(event){
-        const file = event.target.files[0];
+        const files = Array.from(event.target.files);
+        let message = '';
 
-        if (file){
+        if (files.length > MAX_PHOTOS) {
+            message = `please choose at most ${MAX_PHOTOS} photos`;
+        } else {
+            const bad = files.find(
+                f => !ALLOWED_PHOTO_TYPES.includes(f.type) || f.size > MAX_PHOTO_BYTES
+            );
+            if (bad) {
+                message = `"${bad.name}" has to be a jpg, png or webp under 5 MB`;
+            }
+        }
+
+        photoError.textContent = message;
+
+        const file = files[0];
+        if (file && !message) {
             const tempURL = URL.createObjectURL(file);
 
             textbook_preview.src = tempURL;
             textbook_preview.style.display = 'block';
+        } else {
+            textbook_preview.style.display = 'none';
         }
     });
 
