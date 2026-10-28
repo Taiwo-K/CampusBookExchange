@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block title %}Create a Listing{% endblock %}
+
+{% block content %}
+    <h1>Listing Details</h1>
+    <p>Please enter the textbook details</p>
+
+    <form action="{{ url_for('listings.create_listing')}}" method="POST" enctype="multipart/form-data">
+
+        <div style="text-align: center;">
+            <label for="title">Title</label>
+            <input type="text" id="title" name="title" value="{{form.title if form else ''}}" required>
+        </div>
+
+        <br>
+
+        <div style="text-align: center;">
+            <label for="author">Author</label>
+            <input type="text" id="author" name="author" value="{{form.author if form else ''}}" required>
+        </div>
+
+        <br>
+
+        <div style="text-align: center;">
+            <label for="edition">Edition</label>
+            <input type="text" id="edition" name="edition" value="{{form.edition if form else ''}}" required>
+        </div>
+
+        <br>
+
+
+        <div style="text-align: center;">
+            <label for="isbn">ISBN</label>
+            <input type="text" id="isbn" name="isbn" inputmode="numeric" maxlength="20"
+                   value="{{form.isbn if form else ''}}" required>
+        </div>
+
+        <br>
+
+        <div style="text-align: center;">
+            <label for="course_id">Course</label>
+            <select id="course_id" name="course_id">
+                <option value="">Not course-specific</option>
+                {% for c in courses %}
+                    <option value="{{ c.id }}" {{ 'selected' if form and form.course_id == c.id|string else '' }}>
+                        {{ c.course_number }} - {{ c.title }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <br>
+
+        <div style="text-align: center;">
+            <label for="retail_price">Bookstore price (optional)</label>
+            <input type="number" id="retail_price" name="retail_price" step="0.01" min="0"
+                   value="{{form.retail_price if form else ''}}">
+        </div>
+
+        <br>
+
+        <div style="text-align: center;" id="priceBlock">
+            <label for="price">Asking Price</label>
+            <input type="number" id="price" name="price" step="0.01" min="0.01"
+                   value="{{form.price if form else ''}}">
+        </div>
+
+        <br>
+
+        <div style="text-align:center;">
+            <label for="condition">Condition</label>
+            <select id="condition" name="condition" required>
+                <option value="">Select a condition</option>
+                <option value="like_new" {{ 'selected' if form and form.condition == 'like_new' else '' }}>Like New</option>
+                <option value="good"     {{ 'selected' if form and form.condition == 'good'     else '' }}>Good</option>
+                <option value="fair"     {{ 'selected' if form and form.condition == 'fair'     else '' }}>Fair</option>
+            </select>
+        </div>
+
+        <br>
+
+        <div style="text-align: center;">
+            <label for="listing_type">Type of Listing</label>
+            <select id="listing_type" name="listing_type" required>
+                <option value="">Select a type</option>
+
+                <option value="sale"     {{ 'selected' if form and form.listing_type == 'sale'     else '' }}>Sell</option>
+                <option value="trade"    {{ 'selected' if form and form.listing_type == 'trade'    else '' }}>Trade</option>
+                <option value="giveaway" {{ 'selected' if form and form.listing_type == 'giveaway' else '' }}>Give Away</option>
+            </select>
+        </div>
+
+        <br>
+
+        
+        <div style="text-align: center;">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" rows="4" cols="50"
+                      maxlength="1000" required>{{form.description if form else ''}}</textarea>
+        </div>
+
+        <br>
+
+        <div style="text-align: center;">
+            <label for="textbook_image">Upload up to 5 pictures of your textbook</label>
+            <input type="file" id="textbook_image" name="textbook_image"
+                   accept="image/*" multiple>
+        </div>
+
+        <br>
+
+        <div style="text-align: center;">
+            <img id="textbook_preview" src="" alt="TextBook Preview"
+                 style="max-width: 300px; display: none;">
+        </div>
+
+        <br>
+
+        <div style="text-align: center;">
+            <button style="background-color: green; color: white;" type="submit">Create Listing</button>
+        </div>
+
+    </form>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const textbook_image = document.getElementById('textbook_image')
+    const textbook_preview = document.getElementById('textbook_preview')
+
+    textbook_image.addEventListener('change', function(event){
+        const file = event.target.files[0];
+
+        if (file){
+            const tempURL = URL.createObjectURL(file);
+
+            textbook_preview.src = tempURL;
+            textbook_preview.style.display = 'block';
+        }
+    });
+
+    const listing_type = document.getElementById('listing_type')
+    const priceBlock   = document.getElementById('priceBlock')
+    const price        = document.getElementById('price')
+
+    function syncPrice(){
+        const isSale = listing_type.value === 'sale';
+
+        priceBlock.style.display = isSale ? 'block' : 'none';
+        price.required = isSale;
+
+        if (!isSale) price.value = '';
+    }
+
+    listing_type.addEventListener('change', syncPrice);
+    syncPrice();
+</script>
+{% endblock %}

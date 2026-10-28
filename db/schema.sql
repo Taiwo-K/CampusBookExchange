@@ -1,7 +1,6 @@
 -- ============================================================
 --  CampusBookExchange — database schema
---  Traces to Section 6 of the design document. Every table here
---  appears in at least one sequence diagram.
+--  Traces to Section 6 of the design document. 
 --  Note on IDs: we use BIGSERIAL  because they
 --  are easier to read while debugging instead of UUIDS. Sequential IDs are safe
 --  here only because every endpoint checks ownership on the

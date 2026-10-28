@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Resend verification — CampusBookExchange{% endblock %}
+
+{% block content %}
+  <h1>Resend verification</h1>
+  <p class="subtitle">We'll send a fresh link to your UNT email</p>
+
+  <form action="{{ url_for('verify.resend_submit') }}" method="POST"
+        id="resendForm">
+
+    <label for="email">UNT email</label>
+    <input type="email" id="email" name="email"
+           placeholder="name@my.unt.edu" required>
+    <p class="helper" id="emailHelp">Must end in unt.edu</p>
+
+    <button type="submit" id="submitBtn" disabled>Send new link</button>
+  </form>
+
+  <p class="footer">
+    Already verified? <a href="{{ url_for('auth.login_form') }}">Sign in</a>
+  </p>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Same pattern as the registration page: the button stays disabled
+  // until the address is plausible.
+
+  const form       = document.getElementById('resendForm');
+  const email      = document.getElementById('email');
+  const emailHelp  = document.getElementById('emailHelp');
+  const submitBtn  = document.getElementById('submitBtn');
+
+  function check() {
+    const value = email.value.trim();
+
+    if (value === '') {
+      emailHelp.textContent = 'Must end in unt.edu';
+      emailHelp.className   = 'helper';
+      email.classList.remove('invalid');
+      submitBtn.disabled = true;
+      return;
+    }
+    if (/^[^@\s]+@([a-z0-9-]+\.)*unt\.edu$/i.test(value)) {
+      emailHelp.innerHTML = '<span class="mark">&#10003;</span>Valid UNT address';
+      emailHelp.className = 'helper ok';
+      email.classList.remove('invalid');
+      submitBtn.disabled = false;
+      return;
+    }
+    emailHelp.innerHTML = '<span class="mark">&#9888;</span>Use your unt.edu address';
+    emailHelp.className = 'helper error';
+    email.classList.add('invalid');
+    submitBtn.disabled = true;
+  }
+
+  form.addEventListener('input', check);
+  check();
+</script>
+{% endblock %}

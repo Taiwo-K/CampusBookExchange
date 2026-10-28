@@ -2,9 +2,7 @@
 Accounts — FR-1 registration, FR-2 verification, FR-3 login.
 
 SKELETON ONLY. The GET routes render the pages so the app runs end to
-end from day one. The POST handlers are deliberately left as stubs for
-whoever owns these tasks to fill in — the structure is here, the feature
-is not.
+end from day one. 
 """
 
 import re
@@ -15,6 +13,7 @@ from flask import Blueprint, flash, redirect, render_template, request, session,
 from app import db
 from app.auth import current_user, end_session, start_session
 from app.password_validator import validate_password
+from app.services.email import send_verification
 
 bp = Blueprint("auth", __name__)
 
@@ -35,9 +34,7 @@ def register_submit():
     FR-1. TODO — owner of the registration task.
 
     The browser already checks these fields, but that check is for the
-    user's convenience only. Anyone can POST straight to this URL with
-    curl and skip the page entirely, so every rule gets checked again
-    here. This is the part that is actually security.
+    user's convenience only. This is the part that is actually security.
     """
     first_name = request.form.get("first_name", "").strip()
     last_name = request.form.get("last_name", "").strip()
@@ -78,9 +75,9 @@ def register_submit():
         (first_name, last_name, email, password_hash),
     )
 
-    # TODO (FR-2): create a verification token and send the email.
-    #   from app.services.email import send_verification
-    #   send_verification(user["id"], user["email"])
+    # TODO (FR-2): 
+    send_verification(user["id"], user["email"])
+    
 
     flash("Account created. Check your UNT email for the verification link.", "ok")
     return redirect(url_for("auth.register_form"))
