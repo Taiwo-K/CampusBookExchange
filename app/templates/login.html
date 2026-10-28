@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Sign in — CampusBookExchange{% endblock %}
+
+{% block content %}
+  {% if current_user %}
+    <h1>You're signed in</h1>
+    <p class="subtitle">
+      Signed in as {{ current_user.first_name }} {{ current_user.last_name }} —
+      use "Sign out" above to end your session.
+    </p>
+  {% else %}
+    <h1>Sign in</h1>
+    <p class="subtitle">Use your unt.edu email address</p>
+
+    <form action="{{ url_for('auth.login_submit') }}" method="POST" id="loginForm">
+      <input type="hidden" name="next" value="{{ next }}">
+
+      <label for="email">UNT email</label>
+      <input type="email" id="email" name="email"
+             value="{{ form.email if form else '' }}"
+             placeholder="name@my.unt.edu" autocomplete="username" required>
+      <p class="helper"></p>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password"
+             autocomplete="current-password" required>
+      <p class="helper"></p>
+
+      <button type="submit">Sign in</button>
+    </form>
+
+    <p class="footer">
+      New here? <a href="{{ url_for('auth.register_form') }}">Create an account</a>
+    </p>
+  {% endif %}
+{% endblock %}

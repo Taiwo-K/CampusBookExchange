@@ -26,7 +26,7 @@
     <label for="password">Password</label>
     <input type="password" id="password" name="password"
            minlength="8" required>
-    <p class="helper" id="passwordHelp">At least 8 characters</p>
+    <p class="helper" id="passwordHelp">8+ characters with upper, lower, number and symbol</p>
 
     <button type="submit" id="submitBtn" disabled>Create account</button>
   </form>
@@ -78,22 +78,36 @@
     return false;
   }
 
+  // Same rules as app/password_validator.py. The server check is the
+  // one that counts, this just gives feedback while typing.
+  function passwordProblem(value) {
+    if (value.length < 8)            return 'Needs at least 8 characters';
+    if (value.length > 128)          return 'Must be 128 characters or fewer';
+    if (!/[A-Z]/.test(value))        return 'Add an uppercase letter';
+    if (!/[a-z]/.test(value))        return 'Add a lowercase letter';
+    if (!/\d/.test(value))           return 'Add a number';
+    if (!/[^A-Za-z0-9\s]/.test(value)) return 'Add a special character';
+    if (/\s/.test(value))            return 'No spaces allowed';
+    return '';
+  }
+
   function checkPassword() {
     const value = password.value;
 
     if (value === '') {
-      passwordHelp.textContent = 'At least 8 characters';
+      passwordHelp.textContent = '8+ characters with upper, lower, number and symbol';
       passwordHelp.className   = 'helper';
       password.classList.remove('invalid');
       return false;
     }
-    if (value.length >= 8) {
+    const problem = passwordProblem(value);
+    if (problem === '') {
       passwordHelp.innerHTML = '<span class="mark">&#10003;</span>Meets requirements';
       passwordHelp.className = 'helper ok';
       password.classList.remove('invalid');
       return true;
     }
-    passwordHelp.innerHTML = '<span class="mark">&#9888;</span>Needs at least 8 characters';
+    passwordHelp.innerHTML = '<span class="mark">&#9888;</span>' + problem;
     passwordHelp.className = 'helper error';
     password.classList.add('invalid');
     return false;

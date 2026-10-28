@@ -110,6 +110,53 @@ button:disabled {
 
 .footer a { color: var(--green-text); font-weight: 500; }
 
+/* Shared across every page (base.html) — who is signed in, and the
+   one control to stop being signed in. */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.topbar .brand {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.topbar .signin-link {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--green-text);
+  text-decoration: none;
+}
+
+.logout-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logout-form .who {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* Overrides the default full-width 48px button — this one sits
+   inline in the topbar next to the user's name. */
+.logout-form .logout-btn {
+  width: auto;
+  height: auto;
+  margin-top: 0;
+  padding: 6px 12px;
+  font-size: 13px;
+  background: none;
+  color: var(--green-text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
 /* Server-side messages (flash). The browser-side helper text above
    handles the common cases; these are for what only the server knows. */
 .flash {

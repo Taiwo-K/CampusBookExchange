@@ -44,9 +44,17 @@ def create_app() -> Flask:
 
     # Temporary: lets everyone build features before FR-3 login exists.
     # Only active when DEV_LOGIN_AS is set and debug mode is on.
+    from app import auth
     from app.auth import dev_login_if_enabled
 
     dev_login_if_enabled(app)
+
+    # Makes the signed-in user (or None) available to every template as
+    # `current_user`, so base.html can show the logout control without
+    # every route having to pass it in by hand. Looked up through the
+    # module (like app.db elsewhere) rather than a bound import, so
+    # tests can monkeypatch app.auth.current_user.
+    app.context_processor(lambda: {"current_user": auth.current_user()})
 
     # from app.blueprints.listings import bp as listings_bp   # FR-4..FR-7
     # from app.blueprints.messages  import bp as messages_bp  # FR-11
