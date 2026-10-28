@@ -47,6 +47,11 @@ def create_app() -> Flask:
     app.register_blueprint(listings_bp)
     app.register_blueprint(message_bp)
 
+    # Makes the signed-in user (or None) available to every template as
+    # `current_user`, so base.html can show the logout control without
+    # every route having to pass it in by hand. Looked up through the
+    # module (like app.db elsewhere) rather than a bound import, so
+    # tests can monkeypatch app.auth.current_user.
     from app import auth
     app.context_processor(lambda: {"current_user": auth.current_user()})
 

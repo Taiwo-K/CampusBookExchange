@@ -1,7 +1,7 @@
 import bcrypt
 import pytest
 
-from app import create_app
+from app import auth, create_app
 from app.blueprints import auth as auth_bp
 
 PASSWORD = "Tr1cky#Horse"
@@ -20,7 +20,7 @@ def client(monkeypatch):
     started = []
     monkeypatch.setattr(auth_bp, "start_session", lambda uid: started.append(uid))
     monkeypatch.setattr(auth_bp, "end_session", lambda: started.append("ended"))
-    monkeypatch.setattr(auth_bp, "current_user", lambda: None)
+    monkeypatch.setattr(auth, "current_user", lambda: None)
     monkeypatch.setattr(
         auth_bp.db, "query_one",
         lambda sql, params=(): USER if params == ("test@my.unt.edu",) else None,
