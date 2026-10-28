@@ -37,18 +37,13 @@ def create_app() -> Flask:
     from app.blueprints.auth import bp as auth_bp
     from app.blueprints.search import bp as search_bp
     from app.blueprints.verify import bp as verify_bp
+    from app.blueprints.listings import bp as listings_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(search_bp)
     app.register_blueprint(verify_bp)
+    app.register_blueprint(listings_bp)
 
-    # Temporary: lets everyone build features before FR-3 login exists.
-    # Only active when DEV_LOGIN_AS is set and debug mode is on.
-    from app.auth import dev_login_if_enabled
-
-    dev_login_if_enabled(app)
-
-    # from app.blueprints.listings import bp as listings_bp   # FR-4..FR-7
     # from app.blueprints.messages  import bp as messages_bp  # FR-11
     # from app.blueprints.watchlist import bp as watchlist_bp # FR-12, FR-13
     # from app.blueprints.budget    import bp as budget_bp    # FR-14..FR-17
