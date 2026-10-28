@@ -8,11 +8,12 @@ end from day one.
 import re
 
 import bcrypt
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 
 from app import db
+from app.auth import current_user, end_session, start_session
+from app.password_validator import validate_password
 from app.services.email import send_verification
-
 
 bp = Blueprint("auth", __name__)
 
@@ -47,8 +48,7 @@ def register_submit():
         errors.append("Last name is required.")
     if not UNT_EMAIL.match(email):
         errors.append("Use your unt.edu email address.")
-    if len(password) < 8:
-        errors.append("Password must be at least 8 characters.")
+    errors.extend(validate_password(password, email, first_name, last_name))
 
     if errors:
         for e in errors:
@@ -83,7 +83,69 @@ def register_submit():
     return redirect(url_for("auth.register_form"))
 
 
+# Checked against when the email is unknown, so a login for a missing
+# account takes as long as one with a wrong password. Without it the
+# response time would reveal which unt.edu addresses have accounts.
+_dummy_hash: bytes | None = None
+
+
+def _get_dummy_hash() -> bytes:
+    global _dummy_hash
+    if _dummy_hash is None:
+        _dummy_hash = bcrypt.hashpw(b"not-a-real-password", bcrypt.gensalt(rounds=12))
+    return _dummy_hash
+
+
+def _safe_next(target: str | None) -> str | None:
+    """Only allow redirects to a path on this site, never another domain."""
+    if not target or not target.startswith("/"):
+        return None
+    if target.startswith("//") or "\\" in target:
+        return None
+    return target
+
+
 @bp.get("/login")
 def login_form():
-    # TODO (FR-3): build templates/login.html from the Figma login screen.
-    return "Login page not built yet", 501
+    return render_template("login.html", user=current_user(), next=request.args.get("next", ""))
+
+
+@bp.post("/login")
+def login_submit():
+    """
+    FR-3. Check the email and password, then open a session.
+
+    The error is the same whether the email or the password was wrong,
+    so the form cannot be used to find out who has an account.
+    """
+    email = request.form.get("email", "").strip().lower()
+    password = request.form.get("password", "")
+    next_url = request.form.get("next", "")
+
+    user = None
+    if email and password:
+        user = db.query_one(
+            "SELECT id, password_hash, verified FROM users WHERE email = %s", (email,)
+        )
+
+    stored = user["password_hash"].encode() if user else _get_dummy_hash()
+    password_ok = bcrypt.checkpw(password.encode(), stored)
+
+    if user is None or not password_ok:
+        flash("Invalid email or password.", "error")
+        return render_template("login.html", form=request.form, next=next_url), 401
+
+    # Drop anything left in the cookie from before, then start fresh.
+    session.clear()
+    start_session(user["id"])
+
+    if not user["verified"]:
+        flash("Signed in. Confirm your UNT email to use the marketplace.", "info")
+    return redirect(_safe_next(next_url) or url_for("auth.login_form"))
+
+
+@bp.post("/logout")
+def logout():
+    end_session()
+    flash("You have been signed out.", "ok")
+    return redirect(url_for("auth.login_form"))
