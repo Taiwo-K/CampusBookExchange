@@ -134,27 +134,3 @@ def require_verified(view):
 
     return wrapped
 
-
-# ---------------------------------------------------------------------
-#  Temporary — delete once FR-3 login is merged.
-#
-#  Set DEV_LOGIN_AS=1 in your .env and every request is treated as
-#  user 1. This lets the rest of us build and test our features before
-#  the login page exists. It only works when FLASK_DEBUG is on, so it
-#  cannot be switched on by accident in production.
-# ---------------------------------------------------------------------
-
-
-def dev_login_if_enabled(app) -> None:
-    dev_user = os.environ.get("DEV_LOGIN_AS")
-    if not dev_user or not app.debug:
-        return
-
-    @app.before_request
-    def _fake_login():
-        g.user = db.query_one(
-            "SELECT id, first_name, last_name, email, verified FROM users WHERE id = %s",
-            (int(dev_user),),
-        )
-
-    app.logger.warning("DEV_LOGIN_AS is on — every request is user %s", dev_user)
