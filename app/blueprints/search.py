@@ -15,6 +15,7 @@ bp = Blueprint("search", __name__)
 SEARCH_SQL = """
     SELECT l.id,
            l.title,
+           m.author,
            l.price,
            l.condition,
            l.listing_type,
@@ -26,6 +27,7 @@ SEARCH_SQL = """
              LIMIT 1) AS photo_url
       FROM listings l
       LEFT JOIN courses c ON c.id = l.course_id
+      LEFT JOIN materials m ON m.id = l.material_id
      WHERE l.status = 'active'
        AND (   l.title ILIKE %(pattern)s
             OR l.isbn = %(term)s
