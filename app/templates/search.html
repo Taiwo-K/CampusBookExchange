@@ -78,8 +78,7 @@
   <p class="subtitle">Search by title, ISBN or course number</p>
 
   <form class="searchbar" action="{{ url_for('search.search') }}" method="GET">
-    <input type="search" name="q" value="{{ query }}"
-           placeholder="Fundamentals of Nursing" aria-label="Search">
+    <input type="search" name="q" value="{{ query }}" aria-label="Search">
     <button type="submit">Search</button>
   </form>
 
@@ -122,6 +121,7 @@
         <div class="result-body">
           <p class="result-title">{{ r.title }}</p>
           <p class="result-meta">
+            {% if r.author %}{{ r.author }} · {% endif %}
             {% if r.course_number %}{{ r.course_number }} · {% endif %}
             {{ r.condition|replace('_', ' ')|title }}
           </p>
