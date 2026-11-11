@@ -38,13 +38,18 @@ def create_app() -> Flask:
     from app.blueprints.search import bp as search_bp
     from app.blueprints.verify import bp as verify_bp
     from app.blueprints.listings import bp as listings_bp
+    from app.blueprints.messages import bp as message_bp
+
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(search_bp)
     app.register_blueprint(verify_bp)
     app.register_blueprint(listings_bp)
+    app.register_blueprint(message_bp)
 
-    # from app.blueprints.messages  import bp as messages_bp  # FR-11
+    from app import auth
+    app.context_processor(lambda: {"current_user": auth.current_user()})
+
     # from app.blueprints.watchlist import bp as watchlist_bp # FR-12, FR-13
     # from app.blueprints.budget    import bp as budget_bp    # FR-14..FR-17
 
