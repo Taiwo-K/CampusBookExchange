@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Messages — CampusBookExchange{% endblock %}
+
+{% block head %}
+<style>
+  .convo {
+    display: block;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    color: inherit;
+  }
+  .convo-top {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .convo-name {
+    font-size: 15px;
+    font-weight: 500;
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+  }
+  .convo-when {
+    font-size: 12px;
+    color: var(--text-secondary);
+    flex: none;
+  }
+  .convo-book {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 2px 0 0;
+  }
+  /* The last message, cut to one line. A preview that wraps turns the
+     inbox into a wall of text and you can no longer scan it. */
+  .convo-last {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 4px 0 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .unread {
+    display: inline-block;
+    min-width: 18px;
+    padding: 1px 6px;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+    color: #FFFFFF;
+    background: var(--green-text);
+    border-radius: 9px;
+    flex: none;
+  }
+  .empty {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 14px;
+    padding: 40px 0;
+    line-height: 1.5;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+  <h1>Messages</h1>
+  <p class="subtitle">Your conversations about listings</p>
+
+  {% if conversations %}
+    {% for c in conversations %}
+      <a class="convo" href="{{ url_for('messages.thread', conversation_id=c.id) }}">
+        <div class="convo-top">
+          <p class="convo-name">{{ c.other_name }}</p>
+          {% if c.unread %}<span class="unread">{{ c.unread }}</span>{% endif %}
+          {% if c.last_at %}
+            <span class="convo-when">{{ c.last_at.strftime('%b %d') }}</span>
+          {% endif %}
+        </div>
+
+        <p class="convo-book">
+          {{ c.listing_title }}
+          {% if c.listing_status != 'active' %} · no longer listed{% endif %}
+        </p>
+
+        {% if c.last_body %}
+          <p class="convo-last">{{ c.last_body }}</p>
+        {% else %}
+          <p class="convo-last">No messages yet</p>
+        {% endif %}
+      </a>
+    {% endfor %}
+  {% else %}
+    <p class="empty">
+      No messages yet.<br>
+      Find a book and message the seller to start a conversation.
+    </p>
+  {% endif %}
+{% endblock %}

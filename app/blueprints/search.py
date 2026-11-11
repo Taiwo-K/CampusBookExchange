@@ -14,6 +14,7 @@ bp = Blueprint("search", __name__)
 
 SEARCH_SQL = """
     SELECT l.id,
+           l.seller_id,
            l.title,
            m.author,
            l.price,
