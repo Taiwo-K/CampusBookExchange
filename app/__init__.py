@@ -7,7 +7,7 @@ time, which is what lets the tests build a fresh app per test run.
 import os
 
 from dotenv import load_dotenv
-from flask import Flask, jsonify
+from flask import Flask, flash, jsonify, redirect, request, url_for
 
 from app import db
 
@@ -22,6 +22,16 @@ def create_app() -> Flask:
 
     # Caps the whole request body (5 photos x 5 MB + form fields) at the transport layer.
     app.config["MAX_CONTENT_LENGTH"] = 30 * 1024 * 1024
+
+    # Over MAX_CONTENT_LENGTH Flask aborts with 413 before the view (and
+    # validate_photos) runs. Send listing uploads back to the form with a
+    # readable message instead of Flask's default error page.
+    @app.errorhandler(413)
+    def request_too_large(_error):
+        if request.endpoint == "listings.create_listing_submit":
+            flash("those photos are too large - keep each one under 5 MB", "error")
+            return redirect(url_for("listings.create_listing_form"))
+        return "That upload is too large.", 413
 
     # ---- Health check -----------------------------------------------
     @app.get("/api/health")
