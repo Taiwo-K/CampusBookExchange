@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ "My Listings" if is_owner else "Seller Listings"}}{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h1>{{ "My Listings" if is_owner else "Seller's Textbooks" }}</h1>
+
+    {% if is_owner %}
+        <a href="{{ url_for('listings.create_listing_form') }}"> Create Listing</a>
+    {% endif %}
+</div>
+
+{% if listings %}
+    <div class="listings-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem;">
+        {% for item in listings %}
+            <a href="{{ url_for('listings.listing_detail', listing_id=item.id) }}" class="listing-card" style="border: 1px solid #eee; border-radius: 1rem; text-decoration: none; color: inherit; display: block;">
+                
+                {% if item.thumbnail_url %}
+                    <img src="{{ item.thumbnail_url }}" alt="{{ item.title }}" style="width: 100%; height: 180px; object-fit: cover; border-radius: 4px;">
+                {% else %}
+                    <div style="width: 100%; height: 180px; background: #eee; display: flex; align-items: center; justify-content: center;">No Image</div> 
+                {% endif %}
+
+                <h3 style="margin: 0.75rem 0 0.25rem;">{{ item.title }}</h3>
+
+                <p style="font-weight: bold; margin: 0;">
+                    {% if item.listing_type == 'sale' %}
+                        ${{ "%.2f"|format(item.price) }}
+                    {% elif item.listing_type == 'trade' %}
+                        for Trade
+                    {% else %}
+                        free
+                    {% endif %}
+                </p>
+
+            
+            </a>
+        {% endfor %}        
+    </div>
+{% else %}
+    <p>you haven't listed any textbooks yet.</p>
+{% endif %}
+{% endblock %}
