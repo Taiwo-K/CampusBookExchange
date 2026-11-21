@@ -20,6 +20,13 @@ CONDITIONS = ("like_new", "good", "fair")
 LISTING_TYPES = ("sale", "trade", "giveaway")
 ALLOWED_IMAGES = {".jpg", ".jpeg", ".png", ".webp"}
 MAX_PHOTOS = 5
+MAX_PHOTO_BYTES = 5 * 1024 * 1024
+
+_IMAGE_SIGNATURES = {
+    ".jpg":  b"\xff\xd8\xff",
+    ".jpeg": b"\xff\xd8\xff",
+    ".png":  b"\x89PNG\r\n\x1a\n",
+}
 
 
 @bp.get("/create_listing")
@@ -68,6 +75,8 @@ def create_listing_submit():
         errors.append("a description is required")
     if not textbook_images:
         errors.append("Please submit a picture of your textbook")
+    else:
+        errors.extend(validate_photos(textbook_images))
 
     
     if condition not in CONDITIONS:
@@ -142,17 +151,53 @@ def create_listing_submit():
     return redirect(url_for("search.search", q=title))
 
 
+def validate_photos(uploads) -> list[str]:
+    """FR-5 — check type, size and content before anything hits the database."""
+    errors = []
+
+    if len(uploads) > MAX_PHOTOS:
+        errors.append(f"please attach at most {MAX_PHOTOS} photos")
+
+    for upload in uploads[:MAX_PHOTOS]:
+        label = upload.filename or "that file"
+        ext = os.path.splitext(secure_filename(upload.filename))[1].lower()
+
+        if ext not in ALLOWED_IMAGES:
+            errors.append(f'"{label}" has to be a jpg, png or webp image')
+            continue
+
+        upload.stream.seek(0, os.SEEK_END)
+        size = upload.stream.tell()
+        upload.stream.seek(0)
+
+        if size == 0:
+            errors.append(f'"{label}" is empty')
+            continue
+        if size > MAX_PHOTO_BYTES:
+            errors.append(f'"{label}" is larger than 5 MB')
+            continue
+
+        header = upload.stream.read(12)
+        upload.stream.seek(0)
+
+        if ext == ".webp":
+            looks_right = header[:4] == b"RIFF" and header[8:12] == b"WEBP"
+        else:
+            looks_right = header.startswith(_IMAGE_SIGNATURES[ext])
+
+        if not looks_right:
+            errors.append(f'"{label}" doesn\'t look like a real image file')
+
+    return errors
+
+
 def save_photos(listing_id, uploads):
     """FR-5 — save up to five photos and record them against the listing."""
     folder = os.path.join("app", "static", "uploads")
     os.makedirs(folder, exist_ok=True)
 
     for order, upload in enumerate(uploads[:MAX_PHOTOS]):
-       
         ext = os.path.splitext(secure_filename(upload.filename))[1].lower()
-        if ext not in ALLOWED_IMAGES:
-            continue
-
         name = f"{secrets.token_hex(16)}{ext}"
         upload.save(os.path.join(folder, name))
 
