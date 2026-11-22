@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}{{ listing.title }}{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('listings.seller_listings', seller_id=listing.seller_id) }}">&larr; Back to Seller's Listings</a>
+
+<h1>{{ listing.title }}</h1>
+<p><strong>By:</strong> {{ listing.author }} (Edition: {{ listing.edition }})</p>
+<p><strong>ISBN: </strong> {{ listing.isbn }}</p>
+
+{% if listing.course_number %}
+    <p><strong>Course: </strong> {{ listing.course_number }} - {{ listing.course_title}}</p>
+{% endif %}
+
+{% if listing.retail_price %}
+    <p><strong>Bookstore Price:</strong> ${{ "%.2f"|format(listing.retail_price) }}</p>
+{% endif %}
+
+<hr>
+
+<h2>
+    {% if listing.listing_type == 'sale' %}
+        Asking Price : ${{ "%.2f"|format(listing.price) }}
+    {% elif listing.listing_type == 'trade' %}
+        Type: Trade 
+    {% else %}
+        Type: Give Away
+    {% endif %}
+</h2>
+
+
+
+<p><strong>Condtion:</strong> {{ listing.condition | replace('_', ' ') | title }}</p>
+
+<h3>Description</h3>
+<p>{{ listing.description }}</p>
+
+<h3>Photos</h3>
+<div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+    {% for photo in photos %}
+        <img src="{{ photo.url }}" alt="Textbook Photos" style="max-width: 300px; border-radius: 6px; border: 1px solid #ccc;">
+    {% endfor %}
+</div>
+{% endblock %}
