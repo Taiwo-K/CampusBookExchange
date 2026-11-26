@@ -7,7 +7,7 @@ A sale must have a price, a trade or giveaway must not.
 import os
 import secrets
 
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, render_template, request, url_for, abort
 from werkzeug.utils import secure_filename
 
 from app import db
@@ -208,3 +208,62 @@ def save_photos(listing_id, uploads):
             """,
             (listing_id, f"/static/uploads/{name}", order),
         )
+
+@bp.get("/my_listings")
+@require_verified
+def seller_listings():
+    user_id = current_user_id()
+
+    listings = db.query_all(
+        """
+        SELECT
+            l.id,
+            l.title,
+            l.price,
+            l.listing_type,
+            p.url AS thumbnail_url
+        FROM listings l
+        LEFT JOIN listing_photos p
+            ON l.id = p.listing_id AND p.display_order = 0
+        WHERE l.seller_id = %s
+        ORDER BY l.id DESC
+        """,
+        (user_id,),
+    )
+    return render_template("seller_listings.html", listings=listings, is_owner=True)
+
+@bp.get("/listings/<int:listing_id>")
+def listing_detail(listing_id):
+    listing = db.query_one(
+        """
+        SELECT
+            l.*,
+            m.author,
+            m.edition,
+            m.retail_price,
+            c.course_number,
+            c.title AS course_title
+        FROM listings l
+        LEFT JOIN materials m on l.material_id = m.id
+        LEFT JOIN courses c on l.course_id = c.id
+        WHERE l.id = %s
+        """,
+        (listing_id,),
+    )
+
+    if not listing:
+        abort(404)
+
+    photos = db.query_all(
+        """
+        SELECT url
+        FROM listing_photos
+        WHERE listing_id = %s
+        ORDER BY display_order ASC
+        """,
+        (listing_id,),
+    )
+
+    is_owner = (current_user_id() == listing["seller_id"])
+    return render_template("listing_detail.html", listing=listing, photos=photos, is_owner=is_owner)
+
